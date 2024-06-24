@@ -7,7 +7,7 @@ api_aws_role_arn = 'arn:aws:iam::321463406630:role/snowflakeLearnerAssumedRole'
 enabled = true 
 api_allowed_prefixes = ('https://awy6hshxy4.execute-api.us-west-2.amazonaws.com/dev/edu_dora');
 
-create database util_db;
+create database if not exists util_db;
 use database util_db;
 use schema public;
 
