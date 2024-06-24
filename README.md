@@ -23,6 +23,7 @@ CREATE OR REPLACE GIT REPOSITORY builder_workshops
 
 ALTER GIT REPOSITORY builder_workshops FETCH;
 
+-- make sure you get tests.sql and setup.sql files
 ls @builder_workshops/branches/main;
 
 -- Setup Auto Grader
@@ -34,7 +35,7 @@ EXECUTE IMMEDIATE FROM @GRADER_SETUP.PUBLIC.builder_workshops/branches/main/auto
 
 Each workshop `data-eng`, `gen-ai` and `ml` has the respective tests `tests.sql` run them to ensure the labs has been completed,
 
-e.g. to validate `ml` workshop
+e.g. to validate `gen-ai` workshop
 
 ```sql
 -- Run Grading
