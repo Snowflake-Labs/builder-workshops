@@ -14,7 +14,7 @@ USE DATABASE GRADER_SETUP;
 
 CREATE OR REPLACE API INTEGRATION git_api_integration
   API_PROVIDER = git_https_api
-  API_ALLOWED_PREFIXES = ('https://github.com/Snowflake-Labs/builder-workshops.git')
+  API_ALLOWED_PREFIXES = ('https://github.com/Snowflake-Labs')
   ENABLED = TRUE;
 
 CREATE OR REPLACE GIT REPOSITORY builder_workshops
