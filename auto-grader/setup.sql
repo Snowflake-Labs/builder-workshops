@@ -1,3 +1,4 @@
+--!jinja
 use role accountadmin;
 
 create or replace api integration dora_api_integration 
@@ -6,7 +7,7 @@ api_aws_role_arn = 'arn:aws:iam::321463406630:role/snowflakeLearnerAssumedRole'
 enabled = true 
 api_allowed_prefixes = ('https://awy6hshxy4.execute-api.us-west-2.amazonaws.com/dev/edu_dora');
 
-create database util_db;
+create database if not exists util_db;
 use database util_db;
 use schema public;
 
@@ -40,13 +41,7 @@ context_headers = (current_timestamp, current_account, current_statement, curren
 as 'https://awy6hshxy4.execute-api.us-west-2.amazonaws.com/dev/edu_dora/greeting'
 ; 
 
--- Replace <email> with your email address
--- Replace <first name> <middle name> <last name> with your names
+-- The email, first_name, middle_name, last_name values are 
+-- passed as Jinja context variables
 -- Be sure to follow the rules your session leader presents
-select util_db.public.greeting(<email>, <first name>, <middle name>, <last name>);
-
--- Example: With middle name
--- select util_db.public.greeting('my@email.com', 'Snowflake', 'The', 'Bear');
-
--- Example: With no middle name
--- select util_db.public.greeting('my@email.com', 'Snowflake', '', 'Bear');
+select util_db.public.greeting('{{ email }}', '{{ first_name }}',  '{{ middle_name }}',  '{{ last_name }}');
