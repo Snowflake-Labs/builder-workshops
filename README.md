@@ -1,13 +1,44 @@
 # Snowflake Builder Workshops
 
-In this repo, you'll find the SQL tests associated with each Snowflake Builder Workshop. To use the tests:
+In this repo, you'll find the SQL tests associated with each Snowflake Builder Workshop.
 
-1. Ensure you have set up the Snowflake auto-grader in your account. If you have not, wait for your instructor to help you set it up.
-2. After setting up the auto-grader, mavigate to the folder in this repo specificied by your instructor.
-3. Open the SQL file in the folder.
-4. Copy all of the SQL in the file.
-5. Open a new SQL worksheet in your Snowflake account and paste the SQL into the worksheet.
-6. Run the SQL.
-7. If you successfully completed the hands-on lab, you will see a success message after running the SQL. Congrats, you've earned a badge!
+## Setup Auto Grader
 
-For any help, please flag down the instructor or any of the supporting lab staff.
+From within Snowsight run the following SQL commands
+
+```sql
+USE ROLE ACCOUNTADMIN;
+
+CREATE OR REPLACE DATABASE GRADER_SETUP;
+USE DATABASE GRADER_SETUP;
+
+CREATE OR REPLACE API INTEGRATION git_api_integration
+  API_PROVIDER = git_https_api
+  API_ALLOWED_PREFIXES = ('https://github.com/Snowflake-Labs/builder-workshops.git')
+  ENABLED = TRUE;
+
+CREATE OR REPLACE GIT REPOSITORY builder_workshops
+  API_INTEGRATION = git_api_integration
+  ORIGIN = 'https://github.com/Snowflake-Labs/builder-workshops.git';
+
+ALTER GIT REPOSITORY builder_workshops FETCH;
+
+ls @builder_workshops/branches/main;
+
+-- Setup Auto Grader
+EXECUTE IMMEDIATE FROM @GRADER_SETUP.PUBLIC.builder_workshops/branches/main/auto-grader/setup.sql
+    USING(email => '<student email>', first_name => '<student first name>', middle_name => '' ,last_name => '<student last name>');
+```
+
+## Run Tests
+
+Each workshop `data-eng`, `gen-ai` and `ml` has the respective tests `tests.sql` run them to ensure the labs has been completed,
+
+e.g. to validate `ml` workshop
+
+```sql
+-- Run Grading
+EXECUTE IMMEDIATE FROM @GRADER_SETUP.PUBLIC.builder_workshops/branches/main/gen-ai/tests.sql;
+```
+
+The SQL should finish successfully with a response with `STATUS` **You've successfully completed this lab!**.
