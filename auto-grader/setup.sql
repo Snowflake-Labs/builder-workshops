@@ -44,4 +44,4 @@ as 'https://awy6hshxy4.execute-api.us-west-2.amazonaws.com/dev/edu_dora/greeting
 -- The email, first_name, middle_name, last_name values are 
 -- passed as Jinja context variables
 -- Be sure to follow the rules your session leader presents
-select util_db.public.greeting('{{ email }}', '{{ first_name }}',  '{{ middle_name }}',  '{{ last_name }}');
+select util_db.public.greeting('{{ rastogi.rahul.7501@gmail.com }}', '{{ Rahul }}',  '{{ Kumar }}');
