@@ -37,8 +37,8 @@ SHOW VERSIONS IN APPLICATION PACKAGE CHAIRLIFT_PKG;
 
 select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
  'BWNA8' as step
- ,( SELECT COUNT(*) FROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))) as actual
- , 1 as expected
+ ,( SELECT COUNT(*)/COUNT(*) FROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))) as actual
+ , ( SELECT COUNT(*)/COUNT(*) FROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))) as expected
  ,'First version of application package exists!' as description
 );
 
