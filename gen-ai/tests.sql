@@ -4,7 +4,7 @@ use schema public;
 
 select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
  'BWCX2' as step
- ,( SELECT ROW_COUNT FROM QUICKSTART.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'TASTY_BYTE_SALES') as actual
+ ,( SELECT ROW_COUNT FROM QUICKSTART.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'TASTY_BYTE_SALES' AND TABLE_SCHEMA='ML_FUNCTIONS') as actual
  , 183398 as expected
  ,'TASTY_BYTE_SALES table successfully created and loaded!' as description
 );
