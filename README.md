@@ -6,7 +6,7 @@ In this repo, you'll find the SQL tests associated with each Snowflake Builder W
 
 >[!IMPORTANT]
 >
-> PPlease use the email you registered for the event with. and it shoud be the same email you will use for logging into Snowsight.
+> Please use the email you registered for the event with. and it shoud be the same email you will use for logging into Snowsight.
 >
 > **IF YOU USE A DIFFERENT EMAIL,YOUR BADGE WILL NOT BE AUTO-ISSUED.**
 
