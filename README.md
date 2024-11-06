@@ -2,7 +2,7 @@
 
 In this repo, you'll find the SQL tests associated with each Snowflake Builder Workshop.
 
-## AUTO-GRADER Steup Guidelines
+## AUTO-GRADER Setup Guidelines
 
 >[!IMPORTANT]
 >
