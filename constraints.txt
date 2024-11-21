@@ -1,0 +1,5 @@
+snowflake>0.13.0
+snowflake-snowpark-python
+streamlit==1.35.0
+watchdog
+ipykernel

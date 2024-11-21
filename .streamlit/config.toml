@@ -1,0 +1,3 @@
+[server]
+headless = true
+runOnSave = true

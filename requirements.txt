@@ -1,0 +1,5 @@
+snowflake
+snowflake-snowpark-python
+streamlit
+watchdog
+ipykernel
