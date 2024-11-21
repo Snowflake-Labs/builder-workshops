@@ -7,6 +7,8 @@ from snowflake.snowpark.session import Session
 from snowflake.core import Root
 from snowflake.core.account import Account, AccountResource
 
+st.session_state.debug = True
+
 st.header("Snowflake Builder Workshop Grader")
 st.write(
     """
@@ -42,7 +44,6 @@ def get_root(
             "user": user,
             "password": password,
             "role": "accountadmin",
-            #            "authenticator": "userpassword_mfa",
         }
     ).getOrCreate()
     return Root(session)
@@ -117,15 +118,20 @@ def email_matched(
         password - the Snowflake user password
 
     Returns:
-        bool: `True`: If the email matches, `False`: If email does not match
+        tuple: (bool, str) - (is_valid, error_message)
     """
-    root: Root = get_root(account_id, user, password)
-    account = root.accounts[account_id].fetch()
-    logger.debug(f"Account Email:{account.email}")
-    if account.email is None or email != account.email:
-        return False
-
-    return True
+    try:
+        logger.debug("Checking account email.")
+        root: Root = get_root(account_id, user, password)
+        account = root.accounts[account_id].fetch()
+        logger.debug(f"Account Email:{account.email}")
+        return (
+            account.email is not None and email == account.email,
+            "Account Email and Grader email should be same.",
+        )
+    except Exception as e:
+        logger.error(e, stack_info=True)
+        return False, "Error checking account email"
 
 
 def validate(
@@ -168,13 +174,16 @@ def validate(
         messages.error("Email is required.")
         return False
     elif email is not None:
+        # is it a valid email
         is_valid, message = validate_email(email)
         if not is_valid:
             messages.error(message)
-            return is_valid
-    elif not email_matched(email, account_id, user, password):
-        messages.error("Your account email and badge email should match.")
-        return False
+            return is_valid, None, None, None, None
+        # check account email and user provided email
+        is_valid, email_msg = email_matched(email, account_id, user, password)
+        if not is_valid:
+            messages.error(email_msg)
+            return False, None, None, None, None
 
     if first_name is None or len(first_name) < 2:
         messages.error(
@@ -255,26 +264,27 @@ EXECUTE IMMEDIATE FROM @GRADER_SETUP.PUBLIC.builder_workshops/branches/main/auto
 -- Run Grading
 EXECUTE IMMEDIATE FROM @GRADER_SETUP.PUBLIC.builder_workshops/branches/main/{workshop}/tests.sql;
 """
-    with st.expander("Grader Scripts"):
-        st.write(
-            "The grader scripts that will be automatically run, its provided here for reference."
-        )
-        st.write("**Grader Setup**")
-        st.write(
-            f""" 
+    if st.session_state.debug:
+        with st.expander("Auto Grader Scripts"):
+            st.write(
+                "The grader scripts that will be automatically run, its provided here for reference."
+            )
+            st.subheader("Grader Setup")
+            st.write(
+                f""" 
 ```sql
 {_grader_setup_sql}
 ```
-"""
-        )
-        st.write("**Grader Tests**")
-        st.write(
-            f""" 
+    """
+            )
+            st.subheader("Grader Tests")
+            st.write(
+                f""" 
 ```sql
 {_grader_test_sql}
 ```
-"""
-        )
+    """
+            )
 
 
 messages = st.empty()
