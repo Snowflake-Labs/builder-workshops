@@ -1,13 +1,14 @@
 import streamlit as st
 import logging
 
+import os
 import re
 
 from snowflake.snowpark.session import Session
 from snowflake.core import Root
 from snowflake.core.account import Account, AccountResource
 
-st.session_state.debug = True
+st.session_state.debug = True if os.getenv("DEBUG") is None else False
 
 st.header("Snowflake Builder Workshop Auto Grader")
 st.write(
@@ -24,7 +25,7 @@ logger.setLevel(logging.DEBUG)
 
 # TODO pull using Git API
 builder_workshops = {
-    "-1": "Select a Workshop to Grade",
+    "-1": "None",
     "data-eng": "Data Engineering",
     "gen-ai": "Generative AI",
     "ml": "Machine Learning",
@@ -33,16 +34,12 @@ builder_workshops = {
 
 
 @st.cache_resource(show_spinner="Connecting to Snowflake")
-def get_root(
-    account_id: str,
-    user: str,
-    password: str,
-) -> Root:
+def get_root() -> Root:
     session = Session.builder.configs(
         {
-            "account": account_id,
-            "user": user,
-            "password": password,
+            "account": st.session_state.snowflake_account,
+            "user": st.session_state.snowflake_user,
+            "password": st.session_state.snowflake_password,
             "role": "accountadmin",
         }
     ).getOrCreate()
@@ -104,9 +101,6 @@ def validate_email(email):
 
 def email_matched(
     email: str,
-    account_id: str,
-    user: str,
-    password: str,
 ) -> bool:
     """
     Check if the account email and user provided email matches. This method uses `ACCOUNTADMIN` role to check the account details
@@ -121,9 +115,11 @@ def email_matched(
         tuple: (bool, str) - (is_valid, error_message)
     """
     try:
-        logger.debug("Checking account email.")
-        root: Root = get_root(account_id, user, password)
-        account = root.accounts[account_id].fetch()
+        logger.debug(
+            f"Checking account email with account {st.session_state.snowflake_account}."
+        )
+        root: Root = get_root()
+        account = root.accounts[st.session_state.snowflake_account].fetch()
         logger.debug(f"Account Email:{account.email}")
         return (
             account.email is not None and email == account.email,
@@ -139,9 +135,6 @@ def validate(
     middle_name: str,
     last_name: str,
     email: str,
-    account_id: str,
-    user: str,
-    password: str,
 ) -> bool:
     """
     Validates all user provided details. Some rules that will be checked and the details will be sanitized to comply with it:
@@ -157,9 +150,6 @@ def validate(
         middle_name - user's middle name
         last_name - user's last name
         email - user provided email
-        account_id - the snowflake account ID
-        user - the Snowflake user name
-        password - the Snowflake user password
 
     Returns:
         bool: `True`: If validation passes, else will return False
@@ -180,26 +170,24 @@ def validate(
             messages.error(message)
             return is_valid, None, None, None, None
         # check account email and user provided email
-        is_valid, email_msg = email_matched(email, account_id, user, password)
+        is_valid, email_msg = email_matched(email)
         if not is_valid:
             messages.error(email_msg)
             return False, None, None, None, None
 
     if first_name is None or len(first_name) < 2:
-        messages.error(
-            "First Name is required and should be greater than 2 characters."
-        )
+        messages.error("First Name is required and should be minimum 2 characters.")
         return False, None, None, None, None
 
     if last_name is None or len(last_name) < 2:
-        messages.error("Last Name is required and should be greater than 2 characters.")
+        messages.error("Last Name is required and should be minimum 2 characters.")
         return False, None, None, None, None
 
     logger.debug(f"{middle_name is not None} - >>{middle_name}<<")
 
     if not middle_name is not None:
         if len(middle_name) < 2:
-            messages.error("Middle Name should be greater than 2 characters.")
+            messages.error("Middle Name should be minimum 2 characters.")
             return False, None, None, None, None
         middle_name = middle_name.title(middle_name)
 
@@ -215,9 +203,6 @@ def run_grader(
     middle_name: str,
     last_name: str,
     email: str,
-    account_id: str,
-    user: str,
-    password: str,
 ):
     """
     Will setup the auto grader and run the tests
@@ -228,9 +213,6 @@ def run_grader(
         middle_name,
         last_name,
         email,
-        account_id,
-        user,
-        password,
     )
     if not is_valid:
         return
@@ -287,13 +269,31 @@ EXECUTE IMMEDIATE FROM @GRADER_SETUP.PUBLIC.builder_workshops/branches/main/{wor
             )
 
 
+with st.sidebar:
+
+    st.header("Snowflake Account Details")
+
+    snowflake_account_id = st.text_input(
+        "Snowflake Account",
+        key="snowflake_account",
+    )
+    snowflake_user = st.text_input(
+        "Snowflake User Name",
+        key="snowflake_user",
+    )
+    snowflake_user_password = st.text_input(
+        "Password",
+        key="snowflake_password",
+        type="password",
+    )
+
+
 messages = st.empty()
 workshop = st.selectbox(
-    "Select a Workshop to Grade",
-    options=builder_workshops.keys(),
+    "Select the Workshop to Grade",
+    options=sorted(builder_workshops.keys()),
     format_func=lambda x: builder_workshops[x],
     index=0,
-    label_visibility="hidden",
 )
 
 with st.container():
@@ -302,51 +302,36 @@ with st.container():
 
     student_first_name = st.text_input(
         "First Name",
-        key="txt_fname",
+        key="student_first_name",
     )
 
     student_middle_name = st.text_input(
         "Middle Name",
-        key="txt_mname",
+        key="student_middle_name",
     )
 
     student_last_name = st.text_input(
         "Last Name",
-        key="txt_lname",
+        key="student_last_name",
     )
 
     student_email = st.text_input(
         "Email",
-        key="txt_email",
-    )
-
-    st.divider()
-
-    st.write("#### Snowflake Account Details")
-
-    snowflake_account_id = st.text_input(
-        "Snowflake Account",
-        key="txt_sf_ac",
-    )
-    snowflake_user = st.text_input(
-        "Snowflake User Name",
-        key="txt_sf_user",
-    )
-    snowflake_user_password = st.text_input(
-        "Password",
-        key="txt_sf_pwd",
-        type="password",
+        key="student_email",
     )
 
     can_grade = (
-        student_first_name is not None
+        workshop != "-1"
+        or student_first_name is not None
         or student_last_name is not None
         or student_email is not None
-        or snowflake_account_id is not None
-        or snowflake_user is not None
-        or snowflake_user_password is not None
+        or st.session_state.snowflake_account is not None
+        or st.session_state.snowflake_user is not None
+        or st.session_state.snowflake_password is not None
     )
-    grade = st.button("Grade me!", type="primary")
+
+    logger.debug(f"Can Grade ?{can_grade}")
+    grade = st.button("Grade me!", type="primary", disabled=not can_grade)
 
     if grade:
         run_grader(
@@ -354,7 +339,4 @@ with st.container():
             student_middle_name.strip(),
             student_last_name.strip(),
             student_email.strip(),
-            snowflake_account_id.strip(),
-            snowflake_user.strip(),
-            snowflake_user_password,
         )
