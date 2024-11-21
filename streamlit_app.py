@@ -167,7 +167,7 @@ def validate(
     logger.debug(f"Workshop:{workshop}")
 
     if workshop == "-1":
-        st.error("Select a Workshop to grade.")
+        messages.error("Select a Workshop to grade.")
         return False
 
     if email is None:
