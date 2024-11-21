@@ -9,7 +9,7 @@ from snowflake.core.account import Account, AccountResource
 
 st.session_state.debug = True
 
-st.header("Snowflake Builder Workshop Grader")
+st.header("Snowflake Builder Workshop Auto Grader")
 st.write(
     """
 Auto Grader - Evaluate [Builder Workshop](https://github.com/Snowflake-Labs/builder-workshops) assignments and earn your badges within 7 days of successful completion.
