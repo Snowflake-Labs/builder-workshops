@@ -168,11 +168,11 @@ def validate(
 
     if workshop == "-1":
         messages.error("Select a Workshop to grade.")
-        return False
+        return False, None, None, None, None
 
     if email is None:
         messages.error("Email is required.")
-        return False
+        return False, None, None, None, None
     elif email is not None:
         # is it a valid email
         is_valid, message = validate_email(email)
