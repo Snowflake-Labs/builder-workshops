@@ -22,7 +22,7 @@ select util_db.public.grader(step, (actual = expected), actual, expected, descri
  'BWCR03' as step
  ,(select iff(count(*)=0, 0, count(*)/count(*))
       from table(information_schema.query_history())
-      where query_text like 'SELECT snowflake.cortex.complete(\'mixtral%') as actual
+      where query_text like '%snowflake.cortex.complete(\'mistral%') as actual
  , 1 as expected
  ,'TRANSLATE REVIEWS!' as description
 );
@@ -37,7 +37,7 @@ select util_db.public.grader(step, (actual = expected), actual, expected, descri
 );
 
 select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
- 'BWCR04' as step
+ 'BWCR05' as step
  ,(select iff(count(*)=0, 0, count(*)/count(*))
       from table(information_schema.query_history())
       where query_text like '%[INST]### Write me survey report email%') as actual
@@ -58,7 +58,7 @@ select util_db.public.grader(step, (actual = expected), actual, expected, descri
  'BWCR07' as step
  ,(select iff(count(*)=0, 0, count(*)/count(*))
       from table(information_schema.query_history())
-      where query_text like 'select snowflake.cortex.complete(\'snowflake-arctic\'%') as actual
+      where query_text like '%snowflake.cortex.complete(\'snowflake-arctic\'%') as actual
  , 1 as expected
  ,'Arctic Complete function was run!' as description
 );
