@@ -37,7 +37,7 @@ select util_db.public.grader(step, (actual = expected), actual, expected, descri
 );
 
 select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
- 'BWCR04' as step
+ 'BWCR05' as step
  ,(select iff(count(*)=0, 0, count(*)/count(*))
       from table(information_schema.query_history())
       where query_text like '%[INST]### Write me survey report email%') as actual
