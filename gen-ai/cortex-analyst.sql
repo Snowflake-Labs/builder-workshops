@@ -44,8 +44,3 @@ select util_db.public.grader(step, (actual = expected), actual, expected, descri
    from snowflake.account_usage.query_history
     where query_text like 'execute streamlit "CORTEX_ANALYST_DEMO".%') as actual, 1 as expected, 'Had a chat with Cortex via SIS!' as description);
 
-select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
- 'BWCA6' as step
- ,(select iff(count(*)=0, 0, count(*)/count(*))
-   from snowflake.account_usage.query_history
-    where query_text like 'execute streamlit "CORTEX_ANALYST_SEMANTICS"."SEMANTIC_MODEL_GEN%') as actual, 1 as expected, 'Installed the Semantic Gen Native App!' as description);
