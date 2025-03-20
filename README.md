@@ -50,6 +50,10 @@ ALTER GIT REPOSITORY builder_workshops FETCH;
 ls @builder_workshops/branches/main;
 
 -- Setup Auto Grader
+-- Be sure to follow the rules your session leader presents
+-- Format your name CORRECTLY (do not use all lower case)
+-- If you do not have a middle name, use an empty string '' ; do not use "null" in place of any values
+-- Double-check your email. You must use the same email for the greeting as you used to register
 EXECUTE IMMEDIATE FROM @GRADER_SETUP.PUBLIC.builder_workshops/branches/main/auto-grader/setup.sql
     USING(email => '<student email>', first_name => '<student first name>', middle_name => '' ,last_name => '<student last name>');
 ```
