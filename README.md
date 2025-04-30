@@ -54,8 +54,11 @@ ls @builder_workshops/branches/main;
 -- Format your name CORRECTLY (do not use all lower case)
 -- If you do not have a middle name, use an empty string '' ; do not use "null" in place of any values
 -- Double-check your email. You must use the same email for the greeting as you used to register
+-- e.g.
+-- EXECUTE IMMEDIATE FROM @GRADER_SETUP.PUBLIC.builder_workshops/branches/main/auto-grader/setup.sql
+-- USING(email => 'jdoe@example.com', first_name => 'John', middle_name => '' ,last_name => 'Doe');
 EXECUTE IMMEDIATE FROM @GRADER_SETUP.PUBLIC.builder_workshops/branches/main/auto-grader/setup.sql
-    USING(email => '<student email>', first_name => '<student first name>', middle_name => '' ,last_name => '<student last name>');
+    USING(email => /* update your email used to register for the workshop */, first_name => /*your first name */, middle_name => '' ,last_name => /* your last name*/);
 ```
 
 ## Run Tests
@@ -69,7 +72,7 @@ e.g. to validate `gen-ai` workshop
 
 ```sql
 -- Run Grading
-EXECUTE IMMEDIATE FROM @GRADER_SETUP.PUBLIC.builder_workshops/branches/main/gen-ai/tests.sql;
+EXECUTE IMMEDIATE FROM @GRADER_SETUP.PUBLIC.builder_workshops/branches/main//*ask the sessions leader on the workshop tests*//tests.sql;
 ```
 
 The SQL should finish successfully with a response with `STATUS` **You've successfully completed this lab!**.
