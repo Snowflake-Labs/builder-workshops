@@ -57,7 +57,7 @@ as 'https://awy6hshxy4.execute-api.us-west-2.amazonaws.com/dev/edu_dora/greeting
 -- Format your name CORRECTLY (do not use all lower case)
 -- If you do not have a middle name, use an empty string '' ; do not use "null" in place of any values
 -- Double-check your email. You must use the same email for the greeting as you used to register
-select util_db.public.greeting('#insert-email-here', '#first-name',  '#middle-name',  '#last-name');
+select util_db.public.greeting(--'email', --'first name',  --'middle name',  --'last name');
 ```
 
 3. Fill out the last line of the auto-grader setup script with your email, first name, middle name (optional) and last name. **For email, please use the email you registered for the event with. If you use a different email, please reach out to the alias `developer-badges-DL@snowflake.com`.**
