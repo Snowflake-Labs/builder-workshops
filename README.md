@@ -60,7 +60,7 @@ as 'https://awy6hshxy4.execute-api.us-west-2.amazonaws.com/dev/edu_dora/greeting
 select util_db.public.greeting('#insert-email-here', '#first-name',  '#middle-name',  '#last-name');
 ```
 
-3. Fill out the last line of the auto-grader setup script with your email, first name, middle name (optional) and last name. **For email, please use the email you registered for the event with. If you use a different email, please allow up to 7 business days to receive your badge. For email changes, please reach out to the alias `developer-badges-DL@snowflake.com`.**
+3. Fill out the last line of the auto-grader setup script with your email, first name, middle name (optional) and last name. **For email, please use the email you registered for the event with. If you use a different email, please reach out to the alias `developer-badges-DL@snowflake.com`.**
 
 4. Run the file.
 
@@ -104,3 +104,5 @@ Your instructor will let you know which tests to run. For example, for the "Inge
 3. Run the entire file at once.
 
 If you passed the lab, you should see an output in the Snowflake console with a message like **You've successfully completed this lab!**.
+
+#### Please allow up to 7 business days to receive your badge.
