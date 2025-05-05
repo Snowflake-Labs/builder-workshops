@@ -64,7 +64,7 @@ select util_db.public.greeting('#insert-email-here', '#first-name',  '#middle-na
 
 4. Run the file.
 
-#### Guidelines for formatting your name in the auto-grader setup script
+### Guidelines for formatting your name in the auto-grader setup script
 
 - Do **not** use all capital letters.
 
