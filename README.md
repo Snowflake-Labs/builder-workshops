@@ -100,7 +100,12 @@ Your instructor will let you know which tests to run. For example, for the "Inge
 1. Open a new SQL worksheet.
 
 2. Copy the contents of the file containing your tests. For example, for data-eng, copy the code inside of **tests.sql**.
-
+```sql
+-- Data Engineering badge = data-eng/tests.sql
+-- LLMOps badge = gen-ai/llm-ops.sql
+-- Cortex Analyst = gen-ai/cortex-analyst.sql
+   ```
+   
 3. Run the entire file at once.
 
 If you passed the lab, you should see an output in the Snowflake console with a message like **You've successfully completed this lab!**.
