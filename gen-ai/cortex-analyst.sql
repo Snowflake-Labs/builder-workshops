@@ -1,4 +1,4 @@
-use role accountadmin;
+use role CORTEX_USER_ROLE;
 use database util_db;
 use schema public;
 
@@ -26,21 +26,14 @@ select util_db.public.grader(step, (actual = expected), actual, expected, descri
 
 select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
  'BWCA2-4' as step
- ,(SELECT COUNT(*) FROM cortex_analyst_demo.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'DAILY_REVENUE_BY_REGION') as actual
+ ,(SELECT COUNT(*) FROM cortex_analyst_demo.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'DAILY_REVENUE') as actual
  , 1 as expected
- ,'DAILY_REVENUE_BY_REGION table successfully created!' as description
+ ,'DAILY_REVENUE table successfully created!' as description
 );
 
 select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
  'BWCA3' as step
- ,( SELECT COUNT(*) FROM CORTEX_ANALYST_DEMO.REVENUE_TIMESERIES.DAILY_REVENUE_BY_REGION) as actual
- , 3650 as expected
- , 'DAILY_REVENUE_BY_REGION table successfully loaded!' as description
+ ,( SELECT COUNT(*) FROM CORTEX_ANALYST_DEMO.REVENUE_TIMESERIES.DAILY_REVENUE) as actual
+ , 730 as expected
+ , 'DAILY_REVENUE table successfully loaded!' as description
 );
-
-select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
- 'BWCA4' as step
- ,(select iff(count(*)=0, 0, count(*)/count(*))
-   from snowflake.account_usage.query_history
-    where query_text like 'execute streamlit "CORTEX_ANALYST_DEMO".%') as actual, 1 as expected, 'Had a chat with Cortex via SIS!' as description);
-
