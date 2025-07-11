@@ -1,6 +1,10 @@
-use role CORTEX_USER_ROLE;
-use database util_db;
-use schema public;
+USE ROLE accountadmin;
+GRANT USAGE ON DATABASE util_db TO ROLE cortex_user_role;
+GRANT USAGE ON SCHEMA public TO ROLE cortex_user_role;
+GRANT USAGE ON ALL FUNCTIONS IN DATABASE util_db TO ROLE cortex_user_role;
+USE ROLE cortex_user_role;
+USE DATABASE util_db;
+USE SCHEMA public;
 
 select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
  'BWCA2-1' as step
