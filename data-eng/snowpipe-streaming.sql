@@ -3,7 +3,10 @@ GRANT USAGE ON DATABASE util_db TO ROLE s3_role;
 GRANT USAGE ON SCHEMA util_db.public TO ROLE s3_role;
 GRANT USAGE ON ALL FUNCTIONS IN DATABASE util_db TO ROLE s3_role;
 
-show storage integrations; --REQUIRED TO RUN NEXT STEP
+USE DATABASE util_db;
+USE SCHEMA public;
+
+show storage integrations; --REQUIRED TO RUN FOR NEXT STEP
 
 SELECT util_db.public.grader(step, (actual = expected), actual, expected, description) AS graded_results 
 FROM (
@@ -13,28 +16,30 @@ FROM (
     1 AS expected,
     'Storage integration successfully created!' AS description
 );
+
 SELECT util_db.public.grader(step, (actual = expected), actual, expected, description) AS graded_results 
 FROM (
   SELECT 
     'BWSS02' AS step,
     (SELECT COUNT(*) 
-     FROM INFORMATION_SCHEMA.STAGES 
+     FROM S3_DB.INFORMATION_SCHEMA.STAGES 
      WHERE STAGE_NAME = 'S3_STAGE') AS actual,
     1 AS expected,
     'Stage S3_STAGE successfully created!' AS description
 );
+
+USE ROLE s3_role; --REQUIRED TO RUN FOR NEXT STEP
+
 SELECT util_db.public.grader(step, (actual = expected), actual, expected, description) AS graded_results 
 FROM (
   SELECT 
     'BWSS03' AS step,
     (SELECT COUNT(*) 
-     FROM INFORMATION_SCHEMA.PIPES 
+     FROM S3_DB.INFORMATION_SCHEMA.PIPES 
      WHERE PIPE_NAME = 'S3_PIPE') AS actual,
     1 AS expected,
     'Pipe successfully created in S3_db.public schema!' AS description
 );
-
-use role s3_role; --REQUIRED TO RUN NEXT STEP
 
 SELECT util_db.public.grader(step, (actual = expected), actual, expected, description) AS graded_results 
 FROM (
@@ -44,4 +49,3 @@ FROM (
     1 AS expected,
     'Ownership of pipe successfully granted to role!' AS description
 );
-
