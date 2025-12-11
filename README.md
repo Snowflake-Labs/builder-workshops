@@ -74,7 +74,7 @@ select util_db.public.greeting(--'email', --'first name',  --'middle name',  --'
 
 - You must enter both a first and last name. **Middle names are optional**.
 
-- Single letters do not count as names.
+- Single letters do not count as names. If your first or last name is a single character, please add a space after it. (Example: 'A ')
 
 - You can use accents or letters from any language.
 
