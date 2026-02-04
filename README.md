@@ -14,6 +14,8 @@ This repo contains the auto-grader and the tests for your Snowflake Northstar wo
 
 ### Guidelines for formatting your name in the auto-grader setup script
 
+- USE THE EMAIL YOU USED TO REGISTER FOR THE EVENT. IF YOU USE A DIFFERENT EMAIL, YOUR BADGE WILL NOT BE AUTO-ISSUED.
+
 - Do **not** use all capital letters.
 
 - Do **not** use all lowercase letters.
@@ -49,9 +51,11 @@ Your instructor will let you know which tests to run. For example, for the "Inge
 
 2. Copy the contents of the file containing your tests. For example, for data-eng, copy the code inside of **tests.sql**.
 ```sql
--- Data Engineering badge = data-eng/tests.sql
--- LLMOps badge = gen-ai/llm-ops.sql
+-- Data Engineering badge = data-eng/ingestion-transformation-delivery.sql
+-- Snowpipe Streaming = data-eng/snowpipe-streaming.sql
 -- Cortex Analyst = gen-ai/cortex-analyst.sql
+-- Snowflake Intelligence = gen-ai/snowflake-intelligence.sql
+-- Dynamic Tables = data-eng/dynamic-tables.sql
    ```
    
 3. Run the entire file at once.
