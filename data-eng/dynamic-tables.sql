@@ -52,4 +52,4 @@ select util_db.public.grader(step, (actual = expected), actual, expected, descri
  ,'Data quality was integrated successfully!' as description
 );
 
-SELECT 'You\'ve successfully completed Build 2025\'s DE lab!' as STATUS;
+SELECT 'You\'ve successfully completed Dynamic Tables lab!' as STATUS;
