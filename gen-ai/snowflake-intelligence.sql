@@ -52,32 +52,4 @@ select util_db.public.grader(step, (actual = expected), actual, expected, descri
  ,'Sent requests to Cortex Analyst successfully!' as description
 );
 
-select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
- 'BWSI08' as step
- , (select count(*) from dash_db_si.information_schema.functions where function_name = 'ROUNDTOWHOLE') as actual
- , 1 as expected
- ,'Created Python UDF successfully!' as description
-);
-
-select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
- 'BWSI09' as step
- , (select count(*) from dash_db_si.information_schema.functions where function_name = 'AVGPRICEPERUNITPRODUCTPERSALE') as actual
- , 1 as expected
- ,'Created SQL UDTF successfully!' as description
-);
-
-select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
- 'BWSI10' as step
- , (select count(*) from dash_db_si.information_schema.views where table_name = 'AVG_PRICE_PER_UNIT_PRODUCT_PER_SALE') as actual
- , 1 as expected
- ,'Created a new view using UDF/UDTF successfully!' as description
-);
-
-select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
- 'BWSI11' as step
- , (select count(*) from dash_db_si.information_schema.tables where table_name = 'PRODUCTS_WITH_AVG_PRICE') as actual
- , 1 as expected
- ,'Created a new table using the view successfully!' as description
-);
-
-SELECT 'You\'ve successfully completed Build 2025\'s AI lab!' as STATUS;
+SELECT 'You\'ve successfully completed the Snowflake Intelligence lab!' as STATUS;
