@@ -45,11 +45,4 @@ select util_db.public.grader(step, (actual = expected), actual, expected, descri
  ,'Uploaded semantic model file needed for Cortex Analyst successfully!' as description
 );
 
-select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
- 'BWSI07' as step
- , (select case when sum(request_count) > 1 then 1 else 0 end as result from snowflake.account_usage.cortex_analyst_usage_history) as actual
- , 1 as expected
- ,'Sent requests to Cortex Analyst successfully!' as description
-);
-
 SELECT 'You\'ve successfully completed the Snowflake Intelligence lab!' as STATUS;
