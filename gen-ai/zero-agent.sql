@@ -31,4 +31,18 @@ select util_db.public.grader(step, (actual = expected), actual, expected, descri
  ,'Role for snowflake intelligence admin created successfully!' as description
 );
 
-SELECT 'You\'ve successfully completed the Snowflake Intelligence lab!' as STATUS;
+select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
+ 'BWZA05' as step
+ , (select count(*) from dash_db_si.information_schema.semantic_views where name = 'SEMANTIC_VIEW') as actual
+ , 1 as expected
+ ,'Semantic view created successfully!' as description
+);
+
+select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
+ 'BWZA06' as step
+ , (select count(*) from dash_db_si.information_schema.cortex_search_services where service_name = 'CAMPAIGN_SEARCH') as actual
+ , 1 as expected
+ ,'Cortex Search Services created successfully!' as description
+);
+
+SELECT 'You\'ve successfully completed the From Zero to Agents lab!' as STATUS;
