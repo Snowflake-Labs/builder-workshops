@@ -41,3 +41,38 @@ select util_db.public.grader(step, (actual = expected), actual, expected, descri
  , 730 as expected
  , 'DAILY_REVENUE table successfully loaded!' as description
 );
+
+WITH check_results AS (
+  SELECT 'BWCA2-1' AS step, 'Database (CORTEX_ANALYST_DEMO)' AS description,
+    IFF((SELECT COUNT(*) FROM INFORMATION_SCHEMA.DATABASES WHERE DATABASE_NAME = 'CORTEX_ANALYST_DEMO') = 1, TRUE, FALSE) AS passed
+  UNION ALL
+  SELECT 'BWCA2-2', 'Schema (REVENUE_TIMESERIES)',
+    IFF((SELECT COUNT(*) FROM CORTEX_ANALYST_DEMO.INFORMATION_SCHEMA.SCHEMATA
+           WHERE SCHEMA_NAME = 'REVENUE_TIMESERIES') = 1, TRUE, FALSE)
+  UNION ALL
+  SELECT 'BWCA2-3', 'Stage (RAW_DATA)',
+    IFF((SELECT count(*) FROM cortex_analyst_demo.information_schema.stages
+           WHERE stage_name = 'RAW_DATA') = 1, TRUE, FALSE)
+  UNION ALL
+  SELECT 'BWCA2-4', 'Table (DAILY_REVENUE)',
+    IFF((SELECT COUNT(*) FROM cortex_analyst_demo.INFORMATION_SCHEMA.TABLES
+           WHERE TABLE_NAME = 'DAILY_REVENUE') = 1, TRUE, FALSE)
+  UNION ALL
+  SELECT 'BWCA3', 'DAILY_REVENUE Data (expected 730 rows)',
+    IFF(
+      CASE
+        WHEN (SELECT COUNT(*) FROM cortex_analyst_demo.INFORMATION_SCHEMA.TABLES
+                WHERE TABLE_NAME = 'DAILY_REVENUE') = 1
+        THEN (SELECT COUNT(*) FROM CORTEX_ANALYST_DEMO.REVENUE_TIMESERIES.DAILY_REVENUE)
+        ELSE 0
+      END = 730, TRUE, FALSE)
+)
+SELECT
+  CASE
+    WHEN SUM(IFF(passed, 0, 1)) = 0
+    THEN 'Congratulations! You''ve successfully completed the Cortex Analyst lab!'
+    ELSE 'Not all steps passed. Failed: ' ||
+         LISTAGG(CASE WHEN NOT passed THEN step || ' - ' || description END, ' | ')
+           WITHIN GROUP (ORDER BY step)
+  END AS STATUS
+FROM check_results;

@@ -52,4 +52,46 @@ select util_db.public.grader(step, (actual = expected), actual, expected, descri
  ,'Data quality was integrated successfully!' as description
 );
 
-SELECT 'You\'ve successfully completed Dynamic Tables lab!' as STATUS;
+WITH check_results AS (
+  SELECT 'BWDT01' AS step, 'Databases (RAW_DB, ANALYTICS_DB)' AS description,
+    IFF((SELECT count(*) FROM snowflake.information_schema.databases
+           WHERE database_name IN ('RAW_DB', 'ANALYTICS_DB')) = 2, TRUE, FALSE) AS passed
+  UNION ALL
+  SELECT 'BWDT02', 'Python UDTFs (expected 3)',
+    IFF((SELECT count(*) FROM raw_db.information_schema.functions
+           WHERE function_name IN ('GEN_CUST_INFO', 'GEN_PROD_INV', 'GEN_CUST_PURCHASE')) = 3, TRUE, FALSE)
+  UNION ALL
+  SELECT 'BWDT03', 'Tables (CUSTOMERS, PRODUCTS, ORDERS)',
+    IFF((SELECT count(*) FROM raw_db.information_schema.tables
+           WHERE table_name IN ('CUSTOMERS', 'PRODUCTS', 'ORDERS')) = 3, TRUE, FALSE)
+  UNION ALL
+  SELECT 'BWDT04', 'Dynamic Table (STG_CUSTOMERS_DT)',
+    IFF((SELECT count(*) FROM analytics_db.information_schema.tables
+           WHERE table_name = 'STG_CUSTOMERS_DT') = 1, TRUE, FALSE)
+  UNION ALL
+  SELECT 'BWDT05', 'Dynamic Table (STG_ORDERS_DT)',
+    IFF((SELECT count(*) FROM analytics_db.information_schema.tables
+           WHERE table_name = 'STG_ORDERS_DT') = 1, TRUE, FALSE)
+  UNION ALL
+  SELECT 'BWDT06', 'Fact Dynamic Table (FCT_CUSTOMER_ORDERS_DT)',
+    IFF((SELECT count(*) FROM analytics_db.information_schema.tables
+           WHERE table_name = 'FCT_CUSTOMER_ORDERS_DT') = 1, TRUE, FALSE)
+  UNION ALL
+  SELECT 'BWDT07', 'Data Quality (no null product_id)',
+    IFF(
+      CASE
+        WHEN (SELECT count(*) FROM analytics_db.information_schema.tables
+                WHERE table_name = 'FCT_CUSTOMER_ORDERS_DT') = 1
+        THEN (SELECT count(*) FROM analytics_db.public.fct_customer_orders_dt WHERE product_id IS NULL)
+        ELSE 1
+      END = 0, TRUE, FALSE)
+)
+SELECT
+  CASE
+    WHEN SUM(IFF(passed, 0, 1)) = 0
+    THEN 'You''ve successfully completed Dynamic Tables lab!'
+    ELSE 'Not all steps passed. Failed: ' ||
+         LISTAGG(CASE WHEN NOT passed THEN step || ' - ' || description END, ' | ')
+           WITHIN GROUP (ORDER BY step)
+  END AS STATUS
+FROM check_results;

@@ -45,4 +45,43 @@ select util_db.public.grader(step, (actual = expected), actual, expected, descri
  ,'Uploaded semantic model file needed for Cortex Analyst successfully!' as description
 );
 
-SELECT 'You\'ve successfully completed the Snowflake Intelligence lab!' as STATUS;
+WITH check_results AS (
+  SELECT 'BWSI01' AS step, 'Databases (DASH_DB_SI, SNOWFLAKE_INTELLIGENCE)' AS description,
+    IFF((SELECT count(*) FROM snowflake.information_schema.databases
+           WHERE database_name IN ('DASH_DB_SI', 'SNOWFLAKE_INTELLIGENCE')) = 2, TRUE, FALSE) AS passed
+  UNION ALL
+  SELECT 'BWSI02', 'Stages (expected 6)',
+    IFF((SELECT count(*) FROM dash_db_si.information_schema.stages) = 6, TRUE, FALSE)
+  UNION ALL
+  SELECT 'BWSI03', 'Tables (expected 5)',
+    IFF((SELECT count(*) FROM dash_db_si.information_schema.tables
+           WHERE table_name IN ('MARKETING_CAMPAIGN_METRICS', 'PRODUCTS', 'SALES',
+                                'SOCIAL_MEDIA', 'SUPPORT_CASES')) = 5, TRUE, FALSE)
+  UNION ALL
+  SELECT 'BWSI04', 'Role (SNOWFLAKE_INTELLIGENCE_ADMIN)',
+    IFF((SELECT count(*) FROM dash_db_si.information_schema.applicable_roles
+           WHERE role_name = 'SNOWFLAKE_INTELLIGENCE_ADMIN') = 1, TRUE, FALSE)
+  UNION ALL
+  SELECT 'BWSI05', 'Cortex Search Usage (SUPPORT_CASES)',
+    IFF((SELECT count(distinct service_name) FROM snowflake.account_usage.cortex_search_serving_usage_history
+           WHERE service_name = 'SUPPORT_CASES') = 1, TRUE, FALSE)
+  UNION ALL
+  SELECT 'BWSI06', 'Semantic Model File (marketing_campaigns.yaml)',
+    IFF(
+      CASE
+        WHEN (SELECT count(*) FROM dash_db_si.information_schema.stages
+                WHERE stage_name = 'SEMANTIC_MODELS') >= 1
+        THEN (SELECT count(distinct metadata$filename) FROM @dash_db_si.retail.semantic_models
+                WHERE metadata$filename = 'marketing_campaigns.yaml')
+        ELSE 0
+      END = 1, TRUE, FALSE)
+)
+SELECT
+  CASE
+    WHEN SUM(IFF(passed, 0, 1)) = 0
+    THEN 'You''ve successfully completed the Snowflake Intelligence lab!'
+    ELSE 'Not all steps passed. Failed: ' ||
+         LISTAGG(CASE WHEN NOT passed THEN step || ' - ' || description END, ' | ')
+           WITHIN GROUP (ORDER BY step)
+  END AS STATUS
+FROM check_results;
