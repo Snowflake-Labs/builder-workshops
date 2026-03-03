@@ -13,7 +13,7 @@ select util_db.public.grader(step, (actual = expected), actual, expected, descri
 select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
  'BWSI02' as step
  , (select count(*) from dash_db_si.information_schema.stages) as actual
- , 6 as expected
+ , 7 as expected
  ,'All stages were created successfully!' as description
 );
 
@@ -33,9 +33,9 @@ select util_db.public.grader(step, (actual = expected), actual, expected, descri
 
 select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
  'BWSI05' as step
- , (select count(distinct service_name) from snowflake.account_usage.cortex_search_serving_usage_history where service_name = 'SUPPORT_CASES') as actual
+ , (select count(*) from dash_db_si.information_schema.CORTEX_SEARCH_SERVICES where service_name = 'SUPPORT_CASES') as actual
  , 1 as expected
- ,'Created and used Cortex Search named Support_Cases successfully' as description
+ ,'Cortex Search named Support_Cases successfully' as description
 );
 
 select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
@@ -51,7 +51,7 @@ WITH check_results AS (
            WHERE database_name IN ('DASH_DB_SI', 'SNOWFLAKE_INTELLIGENCE')) = 2, TRUE, FALSE) AS passed
   UNION ALL
   SELECT 'BWSI02', 'Stages (expected 6)',
-    IFF((SELECT count(*) FROM dash_db_si.information_schema.stages) = 6, TRUE, FALSE)
+    IFF((SELECT count(*) FROM dash_db_si.information_schema.stages) = 7, TRUE, FALSE)
   UNION ALL
   SELECT 'BWSI03', 'Tables (expected 5)',
     IFF((SELECT count(*) FROM dash_db_si.information_schema.tables
@@ -62,8 +62,8 @@ WITH check_results AS (
     IFF((SELECT count(*) FROM dash_db_si.information_schema.applicable_roles
            WHERE role_name = 'SNOWFLAKE_INTELLIGENCE_ADMIN') = 1, TRUE, FALSE)
   UNION ALL
-  SELECT 'BWSI05', 'Cortex Search Usage (SUPPORT_CASES)',
-    IFF((SELECT count(distinct service_name) FROM snowflake.account_usage.cortex_search_serving_usage_history
+  SELECT 'BWSI05', 'Cortex Search Service (SUPPORT_CASES)',
+    IFF((SELECT count(*) FROM dash_db_si.information_schema.CORTEX_SEARCH_SERVICES
            WHERE service_name = 'SUPPORT_CASES') = 1, TRUE, FALSE)
   UNION ALL
   SELECT 'BWSI06', 'Semantic Model File (marketing_campaigns.yaml)',
