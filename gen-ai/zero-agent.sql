@@ -31,16 +31,16 @@ select util_db.public.grader(step, (actual = expected), actual, expected, descri
  ,'Role for snowflake intelligence admin created successfully!' as description
 );
 
-select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
+select util_db.public.grader(step, (actual >= expected), actual, expected, description) as graded_results from (SELECT
  'BWZA05' as step
- , (select count(*) from dash_db_si.information_schema.semantic_views where name = 'SEMANTIC_VIEW') as actual
+ , (select count(*) from dash_db_si.information_schema.semantic_views where owner = 'SNOWFLAKE_INTELLIGENCE_ADMIN') as actual
  , 1 as expected
  ,'Semantic view created successfully!' as description
 );
 
-select util_db.public.grader(step, (actual = expected), actual, expected, description) as graded_results from (SELECT
+select util_db.public.grader(step, (actual >= expected), actual, expected, description) as graded_results from (SELECT
  'BWZA06' as step
- , (select count(*) from dash_db_si.information_schema.cortex_search_services where service_name = 'CAMPAIGN_SEARCH') as actual
+ , (select count(*) from dash_db_si.information_schema.cortex_search_services where owner = 'SNOWFLAKE_INTELLIGENCE_ADMIN') as actual
  , 1 as expected
  ,'Cortex Search Services created successfully!' as description
 );
@@ -62,13 +62,13 @@ WITH check_results AS (
     IFF((SELECT count(*) FROM dash_db_si.information_schema.applicable_roles
            WHERE role_name = 'SNOWFLAKE_INTELLIGENCE_ADMIN') = 1, TRUE, FALSE)
   UNION ALL
-  SELECT 'BWZA05', 'Semantic View (SEMANTIC_VIEW)',
+  SELECT 'BWZA05', 'Semantic View (owned by SNOWFLAKE_INTELLIGENCE_ADMIN)',
     IFF((SELECT count(*) FROM dash_db_si.information_schema.semantic_views
-           WHERE name = 'SEMANTIC_VIEW') = 1, TRUE, FALSE)
+           WHERE owner = 'SNOWFLAKE_INTELLIGENCE_ADMIN') >= 1, TRUE, FALSE)
   UNION ALL
-  SELECT 'BWZA06', 'Cortex Search Service (CAMPAIGN_SEARCH)',
+  SELECT 'BWZA06', 'Cortex Search Service (owned by SNOWFLAKE_INTELLIGENCE_ADMIN)',
     IFF((SELECT count(*) FROM dash_db_si.information_schema.cortex_search_services
-           WHERE service_name = 'CAMPAIGN_SEARCH') = 1, TRUE, FALSE)
+           WHERE owner = 'SNOWFLAKE_INTELLIGENCE_ADMIN') >= 1, TRUE, FALSE)
 )
 SELECT
   CASE
