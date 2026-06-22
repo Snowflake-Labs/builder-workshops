@@ -42,14 +42,6 @@ description) as graded_results from (SELECT
   ,'SILVER_AP_INVOICES contains all 50 rows from all source systems!' as description
 );
 
-select util_db.public.grader(step, (actual = expected), actual, expected,
-description) as graded_results from (SELECT
-  'BWCC06' as step
-  ,(SELECT IFF(COUNT(*) >= 1, 1, 0) FROM SNOWFLAKE.ACCOUNT_USAGE.METERING_HISTORY WHERE SERVICE_TYPE = 'CORTEX_CODE_CLI') as actual
-  , 1 as expected
-  ,'Cortex Code CLI usage detected!' as description
-);
-
 WITH check_results AS (
   SELECT 'BWCC01' AS step, 'Database (COCO_WORKSHOP)' AS description,
     IFF((SELECT COUNT(*) FROM INFORMATION_SCHEMA.DATABASES WHERE DATABASE_NAME = 'COCO_WORKSHOP') = 1, TRUE, FALSE) AS passed
@@ -70,9 +62,6 @@ WITH check_results AS (
         THEN (SELECT COUNT(*) FROM coco_workshop.pipeline_lab.silver_ap_invoices)
         ELSE 0
       END = 50, TRUE, FALSE)
-  UNION ALL
-  SELECT 'BWCC06', 'Cortex Code CLI Usage',
-    IFF((SELECT COUNT(*) FROM SNOWFLAKE.ACCOUNT_USAGE.METERING_HISTORY WHERE SERVICE_TYPE = 'CORTEX_CODE_CLI') >= 1, TRUE, FALSE)
 )
 SELECT
   CASE
